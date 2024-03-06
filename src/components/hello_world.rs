@@ -9,6 +9,11 @@ pub struct HelloWorld {
 }
 
 impl Component for HelloWorld {
+    fn init(&mut self) -> eyre::Result<()> {
+        self.text = "Hello, world!".to_string();
+        Ok(())
+    }
+
     fn render(&mut self, frame: &mut Frame, rect: Rect) -> eyre::Result<()> {
         frame.render_widget(Paragraph::new(self.text.clone()), rect);
 

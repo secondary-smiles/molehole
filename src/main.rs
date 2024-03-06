@@ -1,5 +1,5 @@
-mod action;
 mod app;
+mod app_action;
 mod app_event;
 mod component;
 mod components;

@@ -2,7 +2,7 @@ use crossterm::event::{KeyEvent, MouseEvent};
 use eyre::Result;
 use ratatui::prelude::{Frame, Rect};
 
-use crate::action::Action;
+use crate::app_action::AppAction;
 use crate::app_event::AppEvent;
 
 pub trait Component {
@@ -11,7 +11,7 @@ pub trait Component {
     }
 
     #[allow(unused)]
-    fn handle_event(&mut self, event: AppEvent) -> Result<Option<Action>> {
+    fn handle_event(&mut self, event: AppEvent) -> Result<Option<AppAction>> {
         match event {
             AppEvent::Key(key_event) => Ok(self.handle_key_event(key_event)?),
             AppEvent::Mouse(mouse_event) => {
@@ -22,7 +22,7 @@ pub trait Component {
     }
 
     #[allow(unused)]
-    fn handle_key_event(&mut self, key: KeyEvent) -> Result<Option<Action>> {
+    fn handle_key_event(&mut self, key: KeyEvent) -> Result<Option<AppAction>> {
         Ok(None)
     }
 
@@ -30,12 +30,12 @@ pub trait Component {
     fn handle_mouse_event(
         &mut self,
         mouse: MouseEvent,
-    ) -> Result<Option<Action>> {
+    ) -> Result<Option<AppAction>> {
         Ok(None)
     }
 
     #[allow(unused)]
-    fn update(&mut self, action: Action) -> Result<Option<Action>> {
+    fn update(&mut self, action: AppAction) -> Result<Option<AppAction>> {
         Ok(None)
     }
 
