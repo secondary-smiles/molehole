@@ -39,5 +39,5 @@ pub trait Component {
         Ok(None)
     }
 
-    fn render(&mut self, frame: &mut Frame, rect: Rect);
+    fn render(&mut self, frame: &mut Frame, rect: Rect) -> Result<()>;
 }

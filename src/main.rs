@@ -2,12 +2,14 @@ mod action;
 mod app;
 mod app_event;
 mod component;
+mod components;
 mod tui;
 
 use eyre::Result;
 
 fn main() -> Result<()> {
-    let mut app = app::App::start(std::time::Duration::from_millis(10))?;
+    let mut app = app::App::new(std::time::Duration::from_millis(10))?;
+    app.run()?;
 
     app.quit()
 }

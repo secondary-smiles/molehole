@@ -1,7 +1,7 @@
-use std::io::{self, stdout, Stdout};
-
-use crossterm::{execute, terminal::*};
+use crossterm::{event, event::Event, execute, terminal::*};
 use ratatui::prelude::*;
+use std::io;
+use std::io::{stdout, Stdout};
 
 pub type Tui = Terminal<CrosstermBackend<Stdout>>;
 
@@ -17,4 +17,12 @@ pub fn restore() -> io::Result<()> {
     disable_raw_mode()?;
 
     Ok(())
+}
+
+pub fn get_event(tick: std::time::Duration) -> io::Result<Option<Event>> {
+    if event::poll(tick)? {
+        return Ok(Some(event::read()?));
+    }
+
+    Ok(None)
 }
