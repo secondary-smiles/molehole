@@ -3,6 +3,7 @@ mod app_action;
 mod app_event;
 mod component;
 mod components;
+mod keys;
 mod tui;
 
 use eyre::Result;

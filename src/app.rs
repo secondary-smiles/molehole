@@ -6,12 +6,14 @@ use crate::app_action::AppAction;
 use crate::app_event::AppEvent;
 use crate::component::Component;
 use crate::components;
+use crate::keys::key_commands::KeyCommand;
 use crate::tui;
 
 pub struct App {
     pub tui: tui::Tui,
     pub tick_rate: Duration,
     pub components: Vec<Box<dyn Component>>,
+    pub key_commands: Vec<KeyCommand>,
 
     should_quit: bool,
 }
@@ -20,13 +22,24 @@ impl App {
     pub fn new(tick_rate: Duration) -> Result<Self> {
         let tui = tui::init()?;
 
-        let global_keys = components::global_keys::GlobalKeys::default();
+        let mut key_commands = vec![KeyCommand {
+            key_code: "q".to_string(),
+            description: "Quit molehole".to_string(),
+            action: Some(AppAction::Quit),
+        }];
+
+        let global_keys = components::global_keys::GlobalKeys {
+            key_commands: key_commands.clone(),
+            ..Default::default()
+        };
         let hello_world = components::hello_world::HelloWorld::default();
 
         Ok(Self {
             tui,
             tick_rate,
             components: vec![Box::new(hello_world), Box::new(global_keys)],
+            key_commands,
+
             should_quit: false,
         })
     }

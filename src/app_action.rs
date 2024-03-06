@@ -1,3 +1,5 @@
+#[derive(Default, Clone, Copy)]
 pub enum AppAction {
-    Quit
+    #[default]
+    Quit,
 }
