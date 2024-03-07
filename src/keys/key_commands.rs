@@ -47,7 +47,7 @@ pub fn serialize_key_event(event: KeyEvent) -> String {
         KeyCode::Esc => "esc",
         _ => "",
     };
-    let separator = if modifiers.is_empty() { "-" } else { "" };
+    let separator = if modifiers.is_empty() { "" } else { "-" };
     let serialized_event =
         format!("{}{}{}", modifiers.join("-"), separator, key);
 

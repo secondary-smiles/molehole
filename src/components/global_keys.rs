@@ -24,11 +24,11 @@ pub struct GlobalKeys {
 
 impl Component for GlobalKeys {
     fn init(&mut self) -> eyre::Result<()> {
-        self.key_commands.push(KeyCommand {
+        self.key_commands.append(&mut vec![KeyCommand {
             key_code: "?".to_string(),
             description: "Toggle help menu".to_string(),
             action: None,
-        });
+        }]);
 
         self.scroll_state =
             ScrollbarState::new(self.key_commands.len()).position(self.scroll);
@@ -45,26 +45,32 @@ impl Component for GlobalKeys {
             let eat_input = match key_event.as_str() {
                 "?" => {
                     self.should_show = !self.should_show;
+                    self.scroll = 0;
                     true
                 }
-                "down" => {
+                "g" => {
+                    self.scroll = 0;
+                    true
+                }
+                "G" => {
+                    self.scroll = self.key_commands.len() - 1;
+                    true
+                }
+                "down" | "j" => {
                     if self.scroll < self.key_commands.len() - 1 {
                         self.scroll += 1;
-                        self.scroll_state =
-                            self.scroll_state.position(self.scroll);
                     }
                     true
                 }
-                "up" => {
+                "up" | "k" => {
                     if self.scroll > 0 {
                         self.scroll -= 1;
-                        self.scroll_state =
-                            self.scroll_state.position(self.scroll);
                     }
                     true
                 }
                 _ => false,
             };
+            self.scroll_state = self.scroll_state.position(self.scroll);
             if eat_input && self.should_show {
                 return Ok(None);
             }
@@ -119,7 +125,7 @@ impl Component for GlobalKeys {
             .block(block)
             .wrap(Wrap { trim: true })
             .scroll((u16::try_from(self.scroll)?, 0))
-            .style(Style::default().bg(Color::DarkGray).fg(Color::LightYellow));
+            .style(Style::default().bg(Color::DarkGray).fg(Color::White));
 
         if self.should_show {
             frame.render_widget(Clear, center);

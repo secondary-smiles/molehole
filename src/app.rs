@@ -22,22 +22,43 @@ impl App {
     pub fn new(tick_rate: Duration) -> Result<Self> {
         let tui = tui::init()?;
 
-        let key_commands = vec![KeyCommand {
-            key_code: "q".to_string(),
-            description: "Quit molehole".to_string(),
-            action: Some(AppAction::Quit),
-        }];
+        let key_commands = vec![
+            KeyCommand {
+                key_code: "q".to_string(),
+                description: "Quit molehole".to_string(),
+                action: Some(AppAction::Quit),
+            },
+            KeyCommand {
+                key_code: "g".to_string(),
+                description: "Scroll to top".to_string(),
+                action: None,
+            },
+            KeyCommand {
+                key_code: "G".to_string(),
+                description: "Scroll to bottom".to_string(),
+                action: None,
+            },
+            KeyCommand {
+                key_code: "k".to_string(),
+                description: "Scroll up one line".to_string(),
+                action: None,
+            },
+            KeyCommand {
+                key_code: "j".to_string(),
+                description: "Scroll down one line".to_string(),
+                action: None,
+            },
+        ];
 
         let global_keys = components::global_keys::GlobalKeys {
             key_commands: key_commands.clone(),
             ..Default::default()
         };
-        let hello_world = components::hello_world::HelloWorld::default();
 
         Ok(Self {
             tui,
             tick_rate,
-            components: vec![Box::new(hello_world), Box::new(global_keys)],
+            components: vec![Box::new(global_keys)],
             key_commands,
 
             should_quit: false,
