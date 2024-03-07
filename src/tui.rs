@@ -1,5 +1,9 @@
-use crossterm::{event, event::Event, execute, terminal::*};
-use ratatui::prelude::*;
+use crossterm::terminal::{
+    disable_raw_mode, enable_raw_mode, EnterAlternateScreen,
+    LeaveAlternateScreen,
+};
+use crossterm::{event, event::Event, execute};
+use ratatui::prelude::{CrosstermBackend, Terminal};
 use std::io;
 use std::io::{stdout, Stdout};
 

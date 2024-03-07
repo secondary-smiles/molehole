@@ -18,6 +18,7 @@
           cargo
           rust-analyzer
           libiconv
+          clippy
         ];
         shellHook = ''
           exec zsh

@@ -22,7 +22,7 @@ impl App {
     pub fn new(tick_rate: Duration) -> Result<Self> {
         let tui = tui::init()?;
 
-        let mut key_commands = vec![KeyCommand {
+        let key_commands = vec![KeyCommand {
             key_code: "q".to_string(),
             description: "Quit molehole".to_string(),
             action: Some(AppAction::Quit),
@@ -45,7 +45,7 @@ impl App {
     }
 
     pub fn run(&mut self) -> Result<()> {
-        for component in self.components.iter_mut() {
+        for component in &mut self.components {
             component.init()?;
         }
 
@@ -73,10 +73,9 @@ impl App {
 
         if let Some(event) = event {
             let mut actions: Vec<AppAction> = vec![];
-            for component in self.components.iter_mut() {
-                match component.handle_event(event)? {
-                    Some(action) => actions.push(action),
-                    None => (),
+            for component in &mut self.components {
+                if let Some(action) = component.handle_event(event)? {
+                    actions.push(action);
                 }
             }
 
@@ -90,11 +89,8 @@ impl App {
         }
 
         self.tui.draw(|frame| {
-            for (_i, component) in self.components.iter_mut().enumerate() {
-                match component.render(frame, frame.size()) {
-                    Ok(_) => (),
-                    Err(_) => (),
-                }
+            for component in &mut self.components {
+                let _ = component.render(frame, frame.size());
             }
         })?;
 

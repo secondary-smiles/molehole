@@ -1,9 +1,7 @@
-use ratatui::prelude::*;
-use ratatui::widgets::Paragraph;
+use ratatui::prelude::{Frame, Rect};
+use ratatui::widgets::{Paragraph, Wrap};
 
-use crate::app_action::AppAction;
 use crate::component::Component;
-use crate::keys::key_commands::*;
 
 #[derive(Default, Clone)]
 pub struct HelloWorld {
@@ -16,17 +14,11 @@ impl Component for HelloWorld {
         Ok(())
     }
 
-    fn handle_key_event(
-        &mut self,
-        key: crossterm::event::KeyEvent,
-    ) -> eyre::Result<Option<AppAction>> {
-        self.text = serialize_key_event(key);
-        Ok(None)
-    }
-
     fn render(&mut self, frame: &mut Frame, rect: Rect) -> eyre::Result<()> {
-
-        frame.render_widget(Paragraph::new(self.text.clone()), rect);
+        frame.render_widget(
+            Paragraph::new(self.text.clone()).wrap(Wrap { trim: true }),
+            rect,
+        );
 
         Ok(())
     }

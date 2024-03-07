@@ -32,15 +32,14 @@ pub fn serialize_key_event(event: KeyEvent) -> String {
 
     let char;
     let key = match event.code {
-        KeyCode::Backspace => "del",
+        KeyCode::Backspace | KeyCode::Delete => "del",
         KeyCode::Enter => "enter",
         KeyCode::Left => "left",
         KeyCode::Right => "right",
         KeyCode::Up => "up",
         KeyCode::Down => "down",
         KeyCode::Tab => "tab",
-        KeyCode::Delete => "del",
-        KeyCode::Char(c) if c == ' ' => "space",
+        KeyCode::Char(' ') => "space",
         KeyCode::Char(c) => {
             char = c.to_string();
             &char
@@ -48,7 +47,7 @@ pub fn serialize_key_event(event: KeyEvent) -> String {
         KeyCode::Esc => "esc",
         _ => "",
     };
-    let separator = if modifiers.len() > 0 { "-" } else { "" };
+    let separator = if modifiers.is_empty() { "-" } else { "" };
     let serialized_event =
         format!("{}{}{}", modifiers.join("-"), separator, key);
 
