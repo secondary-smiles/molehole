@@ -10,7 +10,6 @@ use eyre::Result;
 
 fn main() -> Result<()> {
     let mut app = app::App::new(std::time::Duration::from_millis(10))?;
-    app.run()?;
 
-    app.quit()
+    app.run()
 }

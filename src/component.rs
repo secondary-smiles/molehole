@@ -11,6 +11,9 @@ pub trait Component {
     }
 
     #[allow(unused)]
+    fn handle_action(&mut self, action: AppAction) {}
+
+    #[allow(unused)]
     fn handle_event(&mut self, event: AppEvent) -> Result<Option<AppAction>> {
         match event {
             AppEvent::Key(key_event) => Ok(self.handle_key_event(key_event)?),

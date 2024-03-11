@@ -77,7 +77,7 @@ impl Component for GlobalKeys {
 
             for key_command in &mut self.key_commands {
                 if key_command.key_code == key_event {
-                    return Ok(key_command.action);
+                    return Ok(key_command.action.clone());
                 }
             }
         }

@@ -128,6 +128,12 @@ impl App {
     fn handle_action(&mut self, action: AppAction) -> Result<()> {
         match action {
             AppAction::Quit => Ok(self.quit()?),
+            _ => {
+                for component in &mut self.components {
+                    component.handle_action(action.clone());
+                }
+                Ok(())
+            }
         }
     }
 }
