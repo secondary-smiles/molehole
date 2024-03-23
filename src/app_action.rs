@@ -1,8 +1,25 @@
-#[derive(Default, Clone)]
+use std::fmt;
+
+#[derive(Default, Clone, Debug)]
 pub enum AppAction {
-    StatusBarMessage(String),
-    StatusBarError(String),
-    StatusBarInput(String),
+    StatusBarGetInput(String),
+    StatusBarSetMessage(String),
+    StatusBarSetError(String),
+    OpenUrl,
+
+    ScrollUp,
+    ScrollDown,
+    ScrollTop,
+    ScrollBottom,
+
+    ShowHelpMenu,
+
     #[default]
     Quit,
+}
+
+impl fmt::Display for AppAction {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }

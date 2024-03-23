@@ -1,5 +1,6 @@
 use crossterm::event::Event;
 use eyre::Result;
+use ratatui::prelude::*;
 use std::time::Duration;
 
 use crate::app_action::AppAction;
@@ -8,7 +9,6 @@ use crate::component::Component;
 use crate::components;
 use crate::keys::key_commands::KeyCommand;
 use crate::tui;
-
 pub struct App {
     pub tui: tui::Tui,
     pub tick_rate: Duration,
@@ -22,50 +22,24 @@ impl App {
     pub fn new(tick_rate: Duration) -> Result<Self> {
         let tui = tui::init()?;
 
-        let key_commands = vec![
-            KeyCommand {
-                key_code: "q".to_string(),
-                description: "Quit molehole".to_string(),
-                action: Some(AppAction::Quit),
-            },
-            KeyCommand {
-                key_code: "g".to_string(),
-                description: "Scroll to top".to_string(),
-                action: None,
-            },
-            KeyCommand {
-                key_code: "G".to_string(),
-                description: "Scroll to bottom".to_string(),
-                action: None,
-            },
-            KeyCommand {
-                key_code: "k".to_string(),
-                description: "Scroll up one line".to_string(),
-                action: None,
-            },
-            KeyCommand {
-                key_code: "j".to_string(),
-                description: "Scroll down one line".to_string(),
-                action: None,
-            },
-        ];
-
-        let global_keys = components::global_keys::GlobalKeys {
-            key_commands: key_commands.clone(),
-            ..Default::default()
-        };
-
         Ok(Self {
             tui,
             tick_rate,
-            components: vec![Box::new(global_keys)],
-            key_commands,
 
             should_quit: false,
+            components: vec![],
+            key_commands: vec![],
         })
     }
 
     pub fn run(&mut self) -> Result<()> {
+        let global_keys = components::global_keys::GlobalKeys {
+            key_commands: self.key_commands.clone(),
+            ..Default::default()
+        };
+        let status_bar = components::status::StatusBar::default();
+        self.components = vec![Box::new(global_keys), Box::new(status_bar)];
+
         for component in &mut self.components {
             component.init()?;
         }
@@ -95,7 +69,7 @@ impl App {
         if let Some(event) = event {
             let mut actions: Vec<AppAction> = vec![];
             for component in &mut self.components {
-                if let Some(action) = component.handle_event(event)? {
+                if let Some(action) = component.handle_event(event.clone())? {
                     actions.push(action);
                 }
             }
@@ -110,9 +84,18 @@ impl App {
         }
 
         self.tui.draw(|frame| {
-            for component in &mut self.components {
-                let _ = component.render(frame, frame.size());
-            }
+            let layout = Layout::default()
+                .direction(Direction::Vertical)
+                .constraints(vec![
+                    Constraint::Percentage(100),
+                    Constraint::Min(1),
+                ])
+                .split(frame.size());
+
+            // status bar
+            let _ = self.components[1].render(frame, layout[1]);
+            // global_keys
+            let _ = self.components[0].render(frame, frame.size());
         })?;
 
         Ok(())

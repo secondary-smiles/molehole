@@ -6,7 +6,7 @@ use crate::app_action::AppAction;
 pub struct KeyCommand {
     pub key_code: String,
     pub description: String,
-    pub action: Option<AppAction>,
+    pub action: AppAction,
 }
 
 impl std::fmt::Display for KeyCommand {

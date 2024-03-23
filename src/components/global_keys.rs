@@ -24,16 +24,38 @@ pub struct GlobalKeys {
 
 impl Component for GlobalKeys {
     fn init(&mut self) -> eyre::Result<()> {
-        self.key_commands.append(&mut vec![KeyCommand {
-            key_code: "?".to_string(),
-            description: "Toggle help menu".to_string(),
-            action: None,
-        }]);
-
         self.scroll_state =
             ScrollbarState::new(self.key_commands.len()).position(self.scroll);
 
         Ok(())
+    }
+
+    fn handle_action(&mut self, action: AppAction) {
+        match action {
+            AppAction::ScrollUp => {
+                if self.scroll > 0 {
+                    self.scroll -= 1;
+                }
+            }
+            AppAction::ScrollDown => {
+                if self.scroll < self.key_commands.len() - 1 {
+                    self.scroll += 1;
+                }
+            }
+            AppAction::ScrollTop => {
+                self.scroll = 0;
+            }
+            AppAction::ScrollBottom => {
+                self.scroll = self.key_commands.len() - 1;
+            }
+            AppAction::ShowHelpMenu => {
+                self.should_show = !self.should_show;
+                self.scroll = 0;
+            }
+
+            _ => {}
+        }
+        self.scroll_state = self.scroll_state.position(self.scroll);
     }
 
     fn handle_key_event(
@@ -42,42 +64,9 @@ impl Component for GlobalKeys {
     ) -> eyre::Result<Option<AppAction>> {
         if key.kind == KeyEventKind::Press {
             let key_event = serialize_key_event(key);
-            let eat_input = match key_event.as_str() {
-                "?" => {
-                    self.should_show = !self.should_show;
-                    self.scroll = 0;
-                    true
-                }
-                "g" => {
-                    self.scroll = 0;
-                    true
-                }
-                "G" => {
-                    self.scroll = self.key_commands.len() - 1;
-                    true
-                }
-                "down" | "j" => {
-                    if self.scroll < self.key_commands.len() - 1 {
-                        self.scroll += 1;
-                    }
-                    true
-                }
-                "up" | "k" => {
-                    if self.scroll > 0 {
-                        self.scroll -= 1;
-                    }
-                    true
-                }
-                _ => false,
-            };
-            self.scroll_state = self.scroll_state.position(self.scroll);
-            if eat_input && self.should_show {
-                return Ok(None);
-            }
-
             for key_command in &mut self.key_commands {
                 if key_command.key_code == key_event {
-                    return Ok(key_command.action.clone());
+                    return Ok(Some(key_command.action.clone()));
                 }
             }
         }
@@ -108,7 +97,8 @@ impl Component for GlobalKeys {
                 Title::from("Keyboard shortcuts").alignment(Alignment::Center),
             )
             .borders(Borders::ALL)
-            .border_type(BorderType::Thick);
+            .border_type(BorderType::Thick)
+            .style(Style::default().bg(Color::DarkGray));
 
         let mut lines: Vec<Line> = vec![];
         for key_command in &mut self.key_commands {
@@ -124,8 +114,7 @@ impl Component for GlobalKeys {
         let commands = Paragraph::new(lines)
             .block(block)
             .wrap(Wrap { trim: true })
-            .scroll((u16::try_from(self.scroll)?, 0))
-            .style(Style::default().bg(Color::DarkGray).fg(Color::White));
+            .scroll((u16::try_from(self.scroll)?, 0));
 
         if self.should_show {
             frame.render_widget(Clear, center);
