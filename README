@@ -1,0 +1,10 @@
+Molehole
+========
+
+Molehole is a (WIP) client for the Molerat protocol [0].
+It is implemented in rust using ratatui [1].
+
+Contributions are welcome, please send them to molerat@git.trinket.icu
+
+[0]: https://trkt.in/molerat
+[1]: https://ratatui.rs
