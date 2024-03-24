@@ -2,29 +2,31 @@ use ratatui::prelude::*;
 use ratatui::widgets::*;
 
 use crate::app_action::AppAction;
+use crate::app_event::AppEvent;
 use crate::component::Component;
 use crate::keys::key_commands::serialize_key_event;
 
 #[derive(Default, Clone)]
 pub struct StatusBar {
-    message: String,
-    current_key: String,
-    error: bool,
+    pub message: String,
+    pub current_key: String,
+    pub error: bool,
+    pub url_to_open: Option<url::Url>,
 }
 
 impl Component for StatusBar {
     fn handle_key_event(
         &mut self,
         key: crossterm::event::KeyEvent,
-    ) -> eyre::Result<Option<AppAction>> {
+    ) -> Option<AppAction> {
         let key_str = serialize_key_event(key);
         self.current_key = key_str;
 
-        Ok(None)
+        None
     }
 
     fn handle_action(&mut self, action: crate::app_action::AppAction) {
-        match action {
+        match action.clone() {
             AppAction::StatusBarSetMessage(message) => {
                 self.error = false;
                 self.message = message;
@@ -33,12 +35,22 @@ impl Component for StatusBar {
                 self.error = true;
                 self.message = message;
             }
-            AppAction::StatusBarGetInput(_prompt) => todo!(),
-            _ => {
-                self.current_key += " ";
-                self.current_key += &action.to_string();
+            AppAction::OpenUrl => {
+                self.url_to_open =
+                    Some(url::Url::parse("molerat://example.com").unwrap());
             }
+            _ => {}
         }
+    }
+
+    fn update(&mut self) -> Option<AppEvent> {
+        if let Some(url) = &self.url_to_open {
+            let event = AppEvent::OpenUrl(url.clone());
+            self.url_to_open = None;
+            return Some(event);
+        }
+
+        None
     }
 
     fn render(

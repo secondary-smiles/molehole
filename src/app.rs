@@ -9,6 +9,7 @@ use crate::component::Component;
 use crate::components;
 use crate::keys::key_commands::KeyCommand;
 use crate::tui;
+
 pub struct App {
     pub tui: tui::Tui,
     pub tick_rate: Duration,
@@ -37,8 +38,16 @@ impl App {
             key_commands: self.key_commands.clone(),
             ..Default::default()
         };
-        let status_bar = components::status::StatusBar::default();
-        self.components = vec![Box::new(global_keys), Box::new(status_bar)];
+        let status_bar = components::status::StatusBar {
+            message: "Press '?' to show the help menu".to_string(),
+            ..Default::default()
+        };
+        let url_manager = components::url_manager::UrlManager::default();
+        self.components = vec![
+            Box::new(global_keys),
+            Box::new(status_bar),
+            Box::new(url_manager),
+        ];
 
         for component in &mut self.components {
             component.init()?;
@@ -67,16 +76,7 @@ impl App {
         };
 
         if let Some(event) = event {
-            let mut actions: Vec<AppAction> = vec![];
-            for component in &mut self.components {
-                if let Some(action) = component.handle_event(event.clone())? {
-                    actions.push(action);
-                }
-            }
-
-            for action in actions {
-                self.handle_action(action)?;
-            }
+            self.handle_event(event)?;
         }
 
         if self.should_quit {
@@ -94,9 +94,27 @@ impl App {
 
             // status bar
             let _ = self.components[1].render(frame, layout[1]);
+
             // global_keys
             let _ = self.components[0].render(frame, frame.size());
         })?;
+
+        self.update()?;
+
+        Ok(())
+    }
+
+    pub fn update(&mut self) -> Result<()> {
+        let mut events: Vec<AppEvent> = vec![];
+        for component in &mut self.components {
+            if let Some(event) = component.update() {
+                events.push(event);
+            }
+        }
+
+        for event in events {
+            self.handle_event(event)?;
+        }
 
         Ok(())
     }
@@ -118,5 +136,19 @@ impl App {
                 Ok(())
             }
         }
+    }
+
+    fn handle_event(&mut self, event: AppEvent) -> Result<()> {
+        let mut actions: Vec<AppAction> = vec![];
+        for component in &mut self.components {
+            if let Some(action) = component.handle_event(event.clone()) {
+                actions.push(action);
+            }
+        }
+
+        for action in actions {
+            self.handle_action(action)?;
+        }
+        Ok(())
     }
 }

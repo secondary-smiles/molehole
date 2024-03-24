@@ -58,20 +58,17 @@ impl Component for GlobalKeys {
         self.scroll_state = self.scroll_state.position(self.scroll);
     }
 
-    fn handle_key_event(
-        &mut self,
-        key: KeyEvent,
-    ) -> eyre::Result<Option<AppAction>> {
+    fn handle_key_event(&mut self, key: KeyEvent) -> Option<AppAction> {
         if key.kind == KeyEventKind::Press {
             let key_event = serialize_key_event(key);
             for key_command in &mut self.key_commands {
                 if key_command.key_code == key_event {
-                    return Ok(Some(key_command.action.clone()));
+                    return Some(key_command.action.clone());
                 }
             }
         }
 
-        Ok(None)
+        None
     }
 
     fn render(&mut self, frame: &mut Frame, rect: Rect) -> eyre::Result<()> {

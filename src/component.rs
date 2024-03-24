@@ -14,32 +14,29 @@ pub trait Component {
     fn handle_action(&mut self, action: AppAction) {}
 
     #[allow(unused)]
-    fn handle_event(&mut self, event: AppEvent) -> Result<Option<AppAction>> {
+    fn handle_event(&mut self, event: AppEvent) -> Option<AppAction> {
         match event {
-            AppEvent::Key(key_event) => Ok(self.handle_key_event(key_event)?),
+            AppEvent::Key(key_event) => self.handle_key_event(key_event),
             AppEvent::Mouse(mouse_event) => {
-                Ok(self.handle_mouse_event(mouse_event)?)
+                self.handle_mouse_event(mouse_event)
             }
-            _ => Ok(None),
+            _ => None,
         }
     }
 
     #[allow(unused)]
-    fn handle_key_event(&mut self, key: KeyEvent) -> Result<Option<AppAction>> {
-        Ok(None)
+    fn handle_key_event(&mut self, key: KeyEvent) -> Option<AppAction> {
+        None
     }
 
     #[allow(unused)]
-    fn handle_mouse_event(
-        &mut self,
-        mouse: MouseEvent,
-    ) -> Result<Option<AppAction>> {
-        Ok(None)
+    fn handle_mouse_event(&mut self, mouse: MouseEvent) -> Option<AppAction> {
+        None
     }
 
     #[allow(unused)]
-    fn update(&mut self, action: AppAction) -> Result<Option<AppAction>> {
-        Ok(None)
+    fn update(&mut self) -> Option<AppEvent> {
+        None
     }
 
     fn render(&mut self, frame: &mut Frame, rect: Rect) -> Result<()>;

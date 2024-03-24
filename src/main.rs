@@ -21,7 +21,6 @@ fn main() -> Result<()> {
             description: "Open new link".to_string(),
             action: AppAction::OpenUrl,
         },
-
         // Navigation
         KeyCommand {
             key_code: "g".to_string(),
@@ -50,9 +49,9 @@ fn main() -> Result<()> {
         },
         KeyCommand {
             key_code: "?".to_string(),
-            description: "Show help menu".to_string(),
-            action: AppAction::ShowHelpMenu
-        }
+            description: "Toggle help menu".to_string(),
+            action: AppAction::ShowHelpMenu,
+        },
     ];
     app.key_commands.append(&mut key_commands);
 

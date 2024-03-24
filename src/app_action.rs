@@ -2,7 +2,6 @@ use std::fmt;
 
 #[derive(Default, Clone, Debug)]
 pub enum AppAction {
-    StatusBarGetInput(String),
     StatusBarSetMessage(String),
     StatusBarSetError(String),
     OpenUrl,

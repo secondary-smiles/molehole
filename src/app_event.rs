@@ -6,6 +6,5 @@ pub enum AppEvent {
     Key(KeyEvent),
     Mouse(MouseEvent),
 
-    StatusBarInput(String),
     OpenUrl(Url),
 }
